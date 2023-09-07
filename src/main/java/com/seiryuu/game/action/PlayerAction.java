@@ -7,6 +7,7 @@ import com.iohao.game.action.skeleton.core.CmdInfo;
 import com.iohao.game.action.skeleton.core.flow.FlowContext;
 import com.iohao.game.bolt.broker.client.kit.UserIdSettingKit;
 import com.iohao.game.bolt.broker.core.client.BrokerClientHelper;
+import com.iohao.game.common.kit.CollKit;
 import com.iohao.game.common.kit.ExecutorKit;
 import com.iohao.game.external.core.kit.ExternalKit;
 import com.iohao.game.external.core.message.ExternalMessage;
@@ -67,11 +68,14 @@ public class PlayerAction {
         gameMap.getMapCharacterMap().put(characterProto.characterId, characterProto);
 
         // 有玩家 移动 广播
-        BrokerClientHelper.getBroadcastContext().broadcast(
-                ActionCmd.of(ActionCmd.move),
-                moveProto,
-                gameMap.currentMapCharacterIds(characterProto.characterId)
-        );
+        List<Long> userIdList = gameMap.currentMapCharacterIds(characterProto.characterId);
+        if (CollKit.notEmpty(userIdList)) {
+            BrokerClientHelper.getBroadcastContext().broadcast(
+                    ActionCmd.of(ActionCmd.move),
+                    moveProto,
+                    userIdList
+            );
+        }
     }
 
     /**

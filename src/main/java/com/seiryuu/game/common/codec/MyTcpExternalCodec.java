@@ -25,6 +25,7 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
 
+import java.nio.ByteOrder;
 import java.util.List;
 
 /**
@@ -48,14 +49,14 @@ public class MyTcpExternalCodec extends MessageToMessageCodec<ByteBuf, ExternalM
          * 优点：使用的系统内存，读写效率高（少一次拷贝），且不受 GC 影响
          * 缺点：分配效率低
          */
-
-
-        ByteBuf buffer = ctx.alloc().buffer();
-        // 消息长度
-        // buffer.writeInt(bytes.length);
+        ByteBuf buffer = ctx.alloc().buffer(bytes.length + 4);
+        // 消息长度，因为客户端使用的是C#,需要采用小端方式编入int
+        buffer.writeIntLE(bytes.length);
+        // 消息
+        buffer.writeBytes(bytes);
 
         // 消息
-        buffer.writeBytes(add4Bytes(bytes));
+//        buffer.writeBytes(add4Bytes(bytes));
 
         out.add(buffer);
     }
@@ -79,7 +80,7 @@ public class MyTcpExternalCodec extends MessageToMessageCodec<ByteBuf, ExternalM
     }
 
     public static MyTcpExternalCodec me() {
-    	return Holder.ME;
+        return Holder.ME;
     }
 
     /** 通过 JVM 的类加载机制, 保证只加载一次 (singleton) */

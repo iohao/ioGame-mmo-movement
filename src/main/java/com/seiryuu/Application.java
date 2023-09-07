@@ -39,9 +39,6 @@ public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
 
-        // 游戏对外服端口
-        int port = 16888;
-
         // 逻辑服列表
         List<AbstractBrokerClientStartup> logicServers = List.of(
                 // 匹配 - 逻辑服
