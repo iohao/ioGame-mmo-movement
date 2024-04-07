@@ -76,18 +76,6 @@ public class MyTcpExternalCodec extends MessageToMessageCodec<ByteBuf, ExternalM
         out.add(message);
     }
 
-    public MyTcpExternalCodec() {
-    }
-
-    public static MyTcpExternalCodec me() {
-        return Holder.ME;
-    }
-
-    /** 通过 JVM 的类加载机制, 保证只加载一次 (singleton) */
-    private static class Holder {
-        static final MyTcpExternalCodec ME = new MyTcpExternalCodec();
-    }
-
     // 俩数组合并,这里  因为客户端使用的是C#,需要采用小端方式编入int
     private byte[] add4Bytes(byte[] data2) {
         //数组结束位,存放内存起始位, 即:高位在后

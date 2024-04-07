@@ -109,7 +109,7 @@ public class Application {
             @Override
             public void pipelineCodec(PipelineContext context) {
                 context.addLast(new LengthFieldBasedFrameDecoder(ExternalGlobalConfig.CoreOption.packageMaxSize, 0, 4, 0, 0));
-                context.addLast("codec", MyTcpExternalCodec.me());
+                context.addLast("codec", new MyTcpExternalCodec());
             }
         });
 
