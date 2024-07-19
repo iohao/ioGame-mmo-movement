@@ -19,13 +19,13 @@
 package com.seiryuu.game.common.codec;
 
 import com.iohao.game.action.skeleton.core.DataCodecKit;
+import com.iohao.game.action.skeleton.protocol.BarMessage;
+import com.iohao.game.external.core.message.ExternalCodecKit;
 import com.iohao.game.external.core.message.ExternalMessage;
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
 
-import java.nio.ByteOrder;
 import java.util.List;
 
 /**
@@ -34,23 +34,18 @@ import java.util.List;
  * @author 渔民小镇
  * @date 2023-02-21
  */
-@ChannelHandler.Sharable
-public class MyTcpExternalCodec extends MessageToMessageCodec<ByteBuf, ExternalMessage> {
+public class MyTcpExternalCodec extends MessageToMessageCodec<ByteBuf, BarMessage> {
     @Override
-    protected void encode(ChannelHandlerContext ctx, ExternalMessage externalMessage, List<Object> out) throws Exception {
+    protected void encode(ChannelHandlerContext ctx, BarMessage message, List<Object> out) throws Exception {
         /*
-         *【游戏对外服】发送消息给【游戏客户端】
-         * 编码器 - ExternalMessage ---> 字节数组，将消息发送到请求端（客户端）
+         * 编码器 - 【游戏对外服】发送消息给【游戏客户端、请求端】
+         * ResponseMessage ---> ExternalMessage ---> 字节数组
          */
+        ExternalMessage externalMessage = ExternalCodecKit.convertExternalMessage(message);
         byte[] bytes = DataCodecKit.encode(externalMessage);
 
-        /*
-         * 使用默认 buffer 。如果没有做任何配置，通常默认实现为池化的 direct （直接内存，也称为堆外内存）
-         * 优点：使用的系统内存，读写效率高（少一次拷贝），且不受 GC 影响
-         * 缺点：分配效率低
-         */
         ByteBuf buffer = ctx.alloc().buffer(bytes.length + 4);
-        // 消息长度，因为客户端使用的是C#,需要采用小端方式编入int
+        // 消息长度，因为客户端使用的是 C#，需要采用小端方式编入 int
         buffer.writeIntLE(bytes.length);
         // 消息
         buffer.writeBytes(bytes);
@@ -63,15 +58,19 @@ public class MyTcpExternalCodec extends MessageToMessageCodec<ByteBuf, ExternalM
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf msg, List<Object> out) {
-        // 解码器 - 字节数组 ---> ExternalMessage，接收请求端的消息（客户端）
-
+        /*
+         * 解码器 - 接收【游戏客户端、请求端】的消息
+         * 字节数组 ---> ExternalMessage ---> RequestMessage
+         */
         // 读取消息长度
         int length = msg.readInt();
         // 消息
         byte[] msgBytes = new byte[length];
         msg.readBytes(msgBytes);
 
-        ExternalMessage message = DataCodecKit.decode(msgBytes, ExternalMessage.class);
+        ExternalMessage externalMessage = DataCodecKit.decode(msgBytes, ExternalMessage.class);
+        BarMessage message = ExternalCodecKit.convertRequestMessage(externalMessage);
+
         //【游戏对外服】接收【游戏客户端】的消息
         out.add(message);
     }
