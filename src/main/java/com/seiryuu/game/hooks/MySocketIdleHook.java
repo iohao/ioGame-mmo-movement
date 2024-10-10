@@ -1,9 +1,8 @@
 package com.seiryuu.game.hooks;
 
 import com.iohao.game.action.skeleton.core.exception.ActionErrorEnum;
-import com.iohao.game.external.core.kit.ExternalKit;
-import com.iohao.game.external.core.message.ExternalMessage;
-import com.iohao.game.external.core.message.ExternalMessageCmdCode;
+import com.iohao.game.action.skeleton.protocol.BarMessage;
+import com.iohao.game.external.core.message.ExternalCodecKit;
 import com.iohao.game.external.core.netty.hook.SocketIdleHook;
 import com.iohao.game.external.core.session.UserSession;
 import io.netty.handler.timeout.IdleState;
@@ -36,17 +35,12 @@ public class MySocketIdleHook implements SocketIdleHook {
             log.debug("ALL_IDLE 总超时");
         }
 
-        ExternalMessage externalMessage = ExternalKit.createExternalMessage();
-        // 请求命令类型: 心跳
-        externalMessage.setCmdCode(ExternalMessageCmdCode.idle);
-        // 错误码
-        externalMessage.setResponseStatus(ActionErrorEnum.idleErrorCode.getCode());
+        BarMessage message = ExternalCodecKit.createErrorIdleMessage(ActionErrorEnum.idleErrorCode);
         // 错误消息
-        externalMessage.setValidMsg(ActionErrorEnum.idleErrorCode.getMsg() + " : " + state.name());
+        message.setValidatorMsg(ActionErrorEnum.idleErrorCode.getMsg() + " : " + state.name());
 
         // 通知客户端，触发了心跳事件
-        userSession.writeAndFlush(externalMessage);
-
+        userSession.writeAndFlush(message);
         // 返回 true 表示通知框架将当前的用户（玩家）连接关闭
         return true;
     }

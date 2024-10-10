@@ -36,16 +36,8 @@ public class GameMap {
         this.mapId = mapId;
     }
 
-
     // 当前地图进入的玩家
     private final Map<String, CharacterProto> mapCharacterMap = new ConcurrentHashMap<>();
-
-    /**
-     * 角色矩阵 当前角色在哪一个格子
-     *
-     * @return
-     */
-    // private final Map<String, String> characterMatrix = new ConcurrentHashMap<>();
 
     /**
      * 获取当前地图中的角色id

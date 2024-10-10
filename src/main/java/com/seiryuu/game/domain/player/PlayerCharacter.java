@@ -13,7 +13,6 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class PlayerCharacter extends BaseEntity {
-    private static final long serialVersionUID = 1L;
 
     /**
      * 角色id

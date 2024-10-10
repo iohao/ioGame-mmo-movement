@@ -27,7 +27,6 @@ import com.iohao.game.bolt.broker.core.client.BrokerClientBuilder;
 import com.iohao.game.bolt.broker.core.common.IoGameGlobalConfig;
 import com.iohao.game.common.kit.NetworkKit;
 import com.seiryuu.game.action.PlayerAction;
-import com.seiryuu.game.code.UserCodeEnum;
 
 /**
  * demo 逻辑服
@@ -44,9 +43,7 @@ public class DemoLogicServer extends AbstractBrokerClientStartup {
                 // 扫描 action 类所在包
                 .scanActionPackage(PlayerAction.class)
                 // 开启广播日志
-                .setBroadcastLog(true)
-                // 错误码-用于文档的生成
-                .addErrorCode(UserCodeEnum.values());
+                .setBroadcastLog(true);
 
         // 业务框架构建器
         var builder = config.createBuilder();

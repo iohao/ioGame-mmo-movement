@@ -42,7 +42,6 @@ public class Application {
 
         // 游戏对外服
         ExternalServer externalServer = createExternalServer(ExternalGlobalConfig.externalPort);
-
         BrokerServer brokerServer = createBrokerServer(IoGameGlobalConfig.brokerPort);
 
         new NettyRunOne()
@@ -63,7 +62,7 @@ public class Application {
      */
     private static BrokerServer createBrokerServer(int port) {
         // Broker Server （游戏网关服） 构建器
-        BrokerServerBuilder brokerServerBuilder = com.iohao.game.bolt.broker.server.BrokerServer.newBuilder()
+        BrokerServerBuilder brokerServerBuilder = BrokerServer.newBuilder()
                 // broker （游戏网关）端口
                 .port(port);
 

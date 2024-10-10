@@ -3,24 +3,18 @@ package com.seiryuu.game.action;
 import cn.hutool.core.convert.Convert;
 import com.iohao.game.action.skeleton.annotation.ActionController;
 import com.iohao.game.action.skeleton.annotation.ActionMethod;
-import com.iohao.game.action.skeleton.core.CmdInfo;
 import com.iohao.game.action.skeleton.core.flow.FlowContext;
 import com.iohao.game.bolt.broker.client.kit.UserIdSettingKit;
 import com.iohao.game.bolt.broker.core.client.BrokerClientHelper;
 import com.iohao.game.common.kit.CollKit;
-import com.iohao.game.common.kit.ExecutorKit;
-import com.iohao.game.external.core.kit.ExternalKit;
-import com.iohao.game.external.core.message.ExternalMessage;
 import com.seiryuu.game.common.cmd.ActionCmd;
 import com.seiryuu.game.domain.map.GameMap;
 import com.seiryuu.game.managers.MapManager;
-import com.seiryuu.game.protocol.map.SyncMapPlayerProto;
 import com.seiryuu.game.protocol.movement.PlayerMoveProto;
 import com.seiryuu.game.protocol.player.CharacterProto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -76,19 +70,5 @@ public class PlayerAction {
                     userIdList
             );
         }
-    }
-
-    /**
-     * 同步周围玩家
-     *
-     * @return
-     */
-    @ActionMethod(ActionCmd.syncPlayer)
-    public ExternalMessage syncPlayer() {
-        // 方便测试 先写死了
-        GameMap gameMap = MapManager.INSTANCE.getGameMap("1");
-        List<CharacterProto> collect = new ArrayList<>(gameMap.getMapCharacterMap().values());
-        SyncMapPlayerProto syncMapPlayerProto = SyncMapPlayerProto.builder().playerCharacterList(collect).build();
-        return ExternalKit.createExternalMessage(ActionCmd.cmd, ActionCmd.syncPlayer, syncMapPlayerProto);
     }
 }
